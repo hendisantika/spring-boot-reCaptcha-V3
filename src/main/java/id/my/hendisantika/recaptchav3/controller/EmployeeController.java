@@ -51,4 +51,11 @@ public class EmployeeController {
         }
         return "register";
     }
+
+    @GetMapping("/all")
+    public String getAllEmployees(Model model) {
+        model.addAttribute("list", employeeRepository.findAll());
+        return "list";
+
+    }
 }
