@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +34,21 @@ public class EmployeeController {
     @GetMapping("/register")
     public String showRegister(Model model) {
         model.addAttribute("employee", new Employee());
+        return "register";
+    }
+
+    @PostMapping("/save")
+    public String saveEmployee(@ModelAttribute("employee")
+                               Employee employee,
+                               @RequestParam(name = "g-recaptcha-response")
+                               String captcha, Model model) {
+        if (validator.validateCaptcha(captcha)) {
+            employeeRepository.save(employee);
+            model.addAttribute("employee", new Employee());
+            model.addAttribute("message", "Employee added!!");
+        } else {
+            model.addAttribute("message", "Please Verify Captcha");
+        }
         return "register";
     }
 }
