@@ -1,9 +1,12 @@
 package id.my.hendisantika.recaptchav3.controller;
 
+import id.my.hendisantika.recaptchav3.entity.Employee;
 import id.my.hendisantika.recaptchav3.repository.EmployeeRepository;
 import id.my.hendisantika.recaptchav3.service.ReCaptchaValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -24,4 +27,10 @@ public class EmployeeController {
     private final ReCaptchaValidationService validator;
 
     private final EmployeeRepository employeeRepository;
+
+    @GetMapping("/register")
+    public String showRegister(Model model) {
+        model.addAttribute("employee", new Employee());
+        return "register";
+    }
 }
