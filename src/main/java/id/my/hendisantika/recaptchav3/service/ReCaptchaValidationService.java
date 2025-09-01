@@ -20,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 public class ReCaptchaValidationService {
 
     private static final String GOOGLE_RECAPTCHA_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify";
-    private final String RECAPTCHA_SECRET = "Your Google reCaptcha secret key";
+    private final String RECAPTCHA_SECRET = "6LdV3iMpAAAAAMP0dCeWqByWdP3IN5ll0AT6kzSt";
 
     public boolean validateCaptcha(String captchaResponse) {
         RestTemplate restTemplate = new RestTemplate();
@@ -34,6 +34,6 @@ public class ReCaptchaValidationService {
             return false;
         }
 
-        return Boolean.TRUE.equals(apiResponse.isSuccess());
+        return apiResponse.isSuccess();
     }
 }
