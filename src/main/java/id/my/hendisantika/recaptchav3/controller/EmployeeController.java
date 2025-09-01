@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping("/employee")
+@RequestMapping("/")
 @RequiredArgsConstructor
 public class EmployeeController {
 
@@ -52,10 +52,9 @@ public class EmployeeController {
         return "register";
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public String getAllEmployees(Model model) {
         model.addAttribute("list", employeeRepository.findAll());
         return "list";
-
     }
 }
