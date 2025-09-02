@@ -188,21 +188,27 @@
 
 <script>
     grecaptcha.ready(function () {
+        console.log('reCAPTCHA ready, site key:', '[[${recaptchaSiteKey}]]');
         const form = document.querySelector('form');
         const submitBtn = document.querySelector('.btn-submit');
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log('Form submit event triggered');
 
             // Add loading state
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
             submitBtn.disabled = true;
 
-            grecaptcha.execute([[${recaptchaSiteKey}]], {action: 'submit'}).then(function (token) {
+            console.log('Executing reCAPTCHA...');
+            grecaptcha.execute('[[${recaptchaSiteKey}]]', {action: 'submit'}).then(function (token) {
+                console.log('reCAPTCHA token received:', token);
                 document.getElementById('recaptcha-token').value = token;
+                console.log('Token set in hidden field, submitting form...');
                 form.submit();
             }).catch(function (error) {
+                console.error('reCAPTCHA error:', error);
                 // Reset button state on error
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;

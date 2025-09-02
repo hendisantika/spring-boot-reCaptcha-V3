@@ -44,13 +44,18 @@ public class EmployeeController {
                                Employee employee,
                                @RequestParam(name = "recaptcha-token", required = false)
                                String captcha, Model model) {
+        System.out.println("DEBUG: Received reCAPTCHA token: " + captcha);
+        
         if (captcha == null || captcha.trim().isEmpty()) {
+            System.out.println("DEBUG: reCAPTCHA token is null or empty");
             model.addAttribute("message", "reCAPTCHA token is missing. Please try again.");
         } else if (validator.validateCaptcha(captcha)) {
+            System.out.println("DEBUG: reCAPTCHA validation successful, saving employee: " + employee.getName());
             employeeRepository.save(employee);
             model.addAttribute("employee", new Employee());
             model.addAttribute("message", "Employee added!!");
         } else {
+            System.out.println("DEBUG: reCAPTCHA validation failed");
             model.addAttribute("message", "Please Verify Captcha");
         }
         model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
