@@ -42,9 +42,11 @@ public class EmployeeController {
     @PostMapping("/save")
     public String saveEmployee(@ModelAttribute("employee")
                                Employee employee,
-                               @RequestParam(name = "recaptcha-token")
+                               @RequestParam(name = "recaptcha-token", required = false)
                                String captcha, Model model) {
-        if (validator.validateCaptcha(captcha)) {
+        if (captcha == null || captcha.trim().isEmpty()) {
+            model.addAttribute("message", "reCAPTCHA token is missing. Please try again.");
+        } else if (validator.validateCaptcha(captcha)) {
             employeeRepository.save(employee);
             model.addAttribute("employee", new Employee());
             model.addAttribute("message", "Employee added!!");

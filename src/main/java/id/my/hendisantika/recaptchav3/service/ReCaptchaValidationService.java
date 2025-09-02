@@ -25,6 +25,12 @@ public class ReCaptchaValidationService {
     private final ReCaptchaConfig reCaptchaConfig;
 
     public boolean validateCaptcha(String captchaResponse) {
+        // Handle null or empty response
+        if (captchaResponse == null || captchaResponse.trim().isEmpty()) {
+            System.out.println("DEBUG: Empty or null captcha response");
+            return false;
+        }
+        
         RestTemplate restTemplate = new RestTemplate();
 
         MultiValueMap<String, String> requestMap = new LinkedMultiValueMap<>();
@@ -32,16 +38,40 @@ public class ReCaptchaValidationService {
         requestMap.add("response", captchaResponse);
 
         try {
+            System.out.println("DEBUG: Validating reCAPTCHA with Google...");
             ReCaptchResponseType apiResponse = restTemplate.postForObject(reCaptchaConfig.getVerify().getUrl(), requestMap, ReCaptchResponseType.class);
+
             if (apiResponse == null) {
+                System.out.println("DEBUG: No response from Google reCAPTCHA API");
                 return false;
             }
 
-            // For reCAPTCHA v3, check both success flag and score
-            // Score should be >= 0.5 for legitimate users
-            return apiResponse.isSuccess() && apiResponse.getScore() != null && apiResponse.getScore() >= 0.5;
+            System.out.println("DEBUG: reCAPTCHA Response - Success: " + apiResponse.isSuccess()
+                    + ", Score: " + apiResponse.getScore()
+                    + ", Action: " + apiResponse.getAction());
+
+            // For reCAPTCHA v3, check success flag first
+            if (!apiResponse.isSuccess()) {
+                System.out.println("DEBUG: reCAPTCHA validation failed - success=false");
+                if (apiResponse.getErrorCodes() != null) {
+                    System.out.println("DEBUG: Error codes: " + String.join(", ", apiResponse.getErrorCodes()));
+                }
+                return false;
+            }
+
+            // Check score - lower threshold for better user experience
+            // Score 0.3 is more lenient than 0.5
+            if (apiResponse.getScore() != null && apiResponse.getScore() >= 0.3) {
+                System.out.println("DEBUG: reCAPTCHA validation passed with score: " + apiResponse.getScore());
+                return true;
+            } else {
+                System.out.println("DEBUG: reCAPTCHA score too low: " + apiResponse.getScore());
+                return false;
+            }
+            
         } catch (Exception e) {
-            // Log the error and return false for any validation failures
+            System.out.println("DEBUG: Exception during reCAPTCHA validation: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

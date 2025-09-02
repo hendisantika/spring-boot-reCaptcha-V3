@@ -199,7 +199,7 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
             submitBtn.disabled = true;
 
-            grecaptcha.execute(/*[[${recaptchaSiteKey}]]*/null, {action: 'submit'}).then(function (token) {
+            grecaptcha.execute([[${recaptchaSiteKey}]], {action: 'submit'}).then(function (token) {
                 document.getElementById('recaptcha-token').value = token;
                 form.submit();
             }).catch(function (error) {

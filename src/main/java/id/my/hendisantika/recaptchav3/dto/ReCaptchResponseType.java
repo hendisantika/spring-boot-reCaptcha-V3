@@ -22,4 +22,19 @@ public class ReCaptchResponseType {
     private Double score; // reCAPTCHA v3 score (0.0 to 1.0)
     private String action; // reCAPTCHA v3 action
     private String[] errorCodes; // Error codes if validation fails
+
+    // Getters for JSON deserialization with different naming conventions
+    public String[] getErrorCodes() {
+        return errorCodes;
+    }
+
+    public void setErrorCodes(String[] errorCodes) {
+        this.errorCodes = errorCodes;
+    }
+
+    // Support for 'error-codes' JSON property name
+    @com.fasterxml.jackson.annotation.JsonProperty("error-codes")
+    public void setErrorCodesHyphenated(String[] errorCodes) {
+        this.errorCodes = errorCodes;
+    }
 }
