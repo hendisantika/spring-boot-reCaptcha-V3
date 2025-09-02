@@ -1,5 +1,6 @@
 package id.my.hendisantika.recaptchav3.controller;
 
+import id.my.hendisantika.recaptchav3.config.ReCaptchaConfig;
 import id.my.hendisantika.recaptchav3.entity.Employee;
 import id.my.hendisantika.recaptchav3.repository.EmployeeRepository;
 import id.my.hendisantika.recaptchav3.service.ReCaptchaValidationService;
@@ -28,19 +29,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class EmployeeController {
 
     private final ReCaptchaValidationService validator;
-
     private final EmployeeRepository employeeRepository;
+    private final ReCaptchaConfig reCaptchaConfig;
 
     @GetMapping("/register")
     public String showRegister(Model model) {
         model.addAttribute("employee", new Employee());
+        model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
         return "register";
     }
 
     @PostMapping("/save")
     public String saveEmployee(@ModelAttribute("employee")
                                Employee employee,
-                               @RequestParam(name = "g-recaptcha-response")
+                               @RequestParam(name = "recaptcha-token")
                                String captcha, Model model) {
         if (validator.validateCaptcha(captcha)) {
             employeeRepository.save(employee);
@@ -49,6 +51,7 @@ public class EmployeeController {
         } else {
             model.addAttribute("message", "Please Verify Captcha");
         }
+        model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
         return "register";
     }
 

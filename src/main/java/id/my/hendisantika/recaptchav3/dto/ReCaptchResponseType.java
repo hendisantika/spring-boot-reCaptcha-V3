@@ -19,4 +19,7 @@ public class ReCaptchResponseType {
     private boolean success;
     private String challenge_ts;
     private String hostname;
+    private Double score; // reCAPTCHA v3 score (0.0 to 1.0)
+    private String action; // reCAPTCHA v3 action
+    private String[] errorCodes; // Error codes if validation fails
 }
