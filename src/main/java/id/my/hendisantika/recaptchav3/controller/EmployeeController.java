@@ -102,4 +102,11 @@ public class EmployeeController {
         model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
         return "edit";
     }
+
+    @GetMapping("/delete/{id}")
+    public String deleteEmployee(@PathVariable Integer id) {
+        log.info("DEBUG: Deleting employee ID: {}", id);
+        employeeRepository.deleteById(id);
+        return "redirect:/";
+    }
 }
