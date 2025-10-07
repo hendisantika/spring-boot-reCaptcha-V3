@@ -34,8 +34,10 @@ public class EmployeeController {
 
     @GetMapping("/register")
     public String showRegister(Model model) {
+        String siteKey = reCaptchaConfig.getSite().getKey();
+        log.info("DEBUG: Site key loaded: {}", siteKey != null ? siteKey.substring(0, Math.min(10, siteKey.length())) + "..." : "NULL");
         model.addAttribute("employee", new Employee());
-        model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
+        model.addAttribute("recaptchaSiteKey", siteKey);
         return "register";
     }
 
