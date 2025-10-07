@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -68,5 +69,37 @@ public class EmployeeController {
     public String getAllEmployees(Model model) {
         model.addAttribute("list", employeeRepository.findAll());
         return "list";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEdit(@PathVariable Integer id, Model model) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+        model.addAttribute("employee", employee);
+        model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
+        return "edit";
+    }
+
+    @PostMapping("/update")
+    public String updateEmployee(@ModelAttribute("employee")
+                                 Employee employee,
+                                 @RequestParam(name = "recaptcha-token", required = false)
+                                 String captcha, Model model) {
+        log.info("DEBUG: Updating employee ID: {}, Received reCAPTCHA token: {}", employee.getId(), captcha);
+
+        if (captcha == null || captcha.trim().isEmpty()) {
+            log.info("DEBUG: reCAPTCHA token is null or empty");
+            model.addAttribute("message", "reCAPTCHA token is missing. Please try again.");
+        } else if (validator.validateCaptcha(captcha)) {
+            log.info("DEBUG: reCAPTCHA validation successful, updating employee: {}", employee.getName());
+            employeeRepository.save(employee);
+            model.addAttribute("employee", employee);
+            model.addAttribute("message", "Employee updated!!");
+        } else {
+            log.info("DEBUG: reCAPTCHA validation failed");
+            model.addAttribute("message", "Please Verify Captcha");
+        }
+        model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
+        return "edit";
     }
 }
