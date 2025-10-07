@@ -5,12 +5,12 @@ import id.my.hendisantika.recaptchav3.entity.Employee;
 import id.my.hendisantika.recaptchav3.repository.EmployeeRepository;
 import id.my.hendisantika.recaptchav3.service.ReCaptchaValidationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Time: 13.15
  * To change this template use File | Settings | File Templates.
  */
+@Slf4j
 @Controller
-@RequestMapping("/")
 @RequiredArgsConstructor
 public class EmployeeController {
 
@@ -44,18 +44,18 @@ public class EmployeeController {
                                Employee employee,
                                @RequestParam(name = "recaptcha-token", required = false)
                                String captcha, Model model) {
-        System.out.println("DEBUG: Received reCAPTCHA token: " + captcha);
+        log.info("DEBUG: Received reCAPTCHA token: {}", captcha);
         
         if (captcha == null || captcha.trim().isEmpty()) {
-            System.out.println("DEBUG: reCAPTCHA token is null or empty");
+            log.info("DEBUG: reCAPTCHA token is null or empty");
             model.addAttribute("message", "reCAPTCHA token is missing. Please try again.");
         } else if (validator.validateCaptcha(captcha)) {
-            System.out.println("DEBUG: reCAPTCHA validation successful, saving employee: " + employee.getName());
+            log.info("DEBUG: reCAPTCHA validation successful, saving employee: {}", employee.getName());
             employeeRepository.save(employee);
             model.addAttribute("employee", new Employee());
             model.addAttribute("message", "Employee added!!");
         } else {
-            System.out.println("DEBUG: reCAPTCHA validation failed");
+            log.info("DEBUG: reCAPTCHA validation failed");
             model.addAttribute("message", "Please Verify Captcha");
         }
         model.addAttribute("recaptchaSiteKey", reCaptchaConfig.getSite().getKey());
